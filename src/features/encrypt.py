@@ -15,7 +15,7 @@ class Encrypt:
     def _derive_key(self, password: str, salt: bytes) -> bytes:
         kdf = PBKDF2HMAC(
             algorithm=hashes.SHA256(),
-            length=32,  # کلید 256 بیتی
+            length=32,  # 256 key
             salt=salt,
             iterations=self.iterations,
             backend=self.backend,
@@ -23,6 +23,8 @@ class Encrypt:
         return kdf.derive(password.encode())
 
     def encrypt(self, data: bytes, password: str) -> tuple[bytes, bytes, bytes]:
+        if not isinstance(data, bytes):
+            data = bytes(data)
         salt = os.urandom(16)
         key = self._derive_key(password, salt)
         aesgcm = AESGCM(key)

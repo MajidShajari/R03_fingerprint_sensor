@@ -2,9 +2,9 @@ import time
 
 import adafruit_fingerprint
 
-from config import CAPTURE_TIME_OUT, LED
-from core.sensor import FingerprintSensor
-from logger import setup_logger
+from src.config import CAPTURE_TIME_OUT, LED
+from src.core.sensor import FingerprintSensor
+from src.logger import setup_logger
 
 local_logger = setup_logger()
 

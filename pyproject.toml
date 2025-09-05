@@ -1,0 +1,27 @@
+[project]
+name = "r503-fingerprint-sensor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "adafruit-circuitpython-fingerprint>=2.2.22",
+    "cryptography>=45.0.7",
+]
+[tool.pylint.'MASTER']
+ignore = [".venv", "build", "dist"]
+ignore-patterns = [".venv/*", "migrations/*"]
+jobs = 4
+[tool.pylint]
+max-line-length = 120
+disable = [
+    "C0114", # missing-module-docstring
+    "C0115", # missing-class-docstring
+    "C0116", # missing-function-docstring
+    "E0401", # import-error
+    "W0718", # broad-exception-caught
+    "W0511", # fixme
+]
+output-format = "colorized"
+[tool.black]
+line-length = 120

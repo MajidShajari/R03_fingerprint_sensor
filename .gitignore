@@ -38,9 +38,6 @@ env.bak/
 venv.bak/
 
 # Scure the data
-data/decrypted
-data/encrypted
-data/logs
-data/tmp
-key_session.bin
+*.bin
+*.log
 *.pkl

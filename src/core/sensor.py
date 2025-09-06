@@ -3,6 +3,7 @@ from typing import Dict
 
 import adafruit_fingerprint
 import serial
+from serial import SerialException
 
 from src.config import BAUDRATE, LED, PORT, SENSOR_TIME_OUT
 from src.logger import setup_logger
@@ -25,6 +26,9 @@ class FingerprintSensor:
             self._sensor = adafruit_fingerprint.Adafruit_Fingerprint(uart)
             local_logger.info("Fingerprint sensor initialized successfully.")
             self.config_led(LED.get("on", {"color": 7, "mode": 1, "cycle": 20, "speed": 250}))
+        except SerialException as e:
+            local_logger.exception("SerialException: Could not connect to sensor.")
+            raise FingerprintSensorError("Sensor not connected") from e
         except Exception as e:
             local_logger.exception("Unexpected error initializing sensor.")
             raise FingerprintSensorError("Unknown sensor error") from e

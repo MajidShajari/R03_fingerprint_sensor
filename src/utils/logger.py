@@ -15,8 +15,7 @@ def setup_logger(name: str = None) -> logging.Logger:
     if local_logger.handlers:
         return local_logger
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(processName)s - %(message)s",
-        datefmt="%Y-%m-%d %H:%M:%S"
+        "%(asctime)s - %(name)s - %(levelname)s - %(processName)s - %(message)s", datefmt="%Y-%m-%d %H:%M:%S"
     )
 
     if not Path(LOGGER_PATH).exists():

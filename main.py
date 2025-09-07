@@ -1,35 +1,49 @@
-from rich.console import Console
-from rich.prompt import Prompt
+import time
 
-from src.config import ENCRYPTED_PATH
-from src.features.encrypt import Encrypt
-from src.features.enroll import Enroll
+from src.config import LED
+from src.core.enroll import Enroll
+from src.core.identify import Identify
+from src.core.status import EnrollStatus, IdentifyStatus
+from src.utils.setup_paths import ensure_paths
 
-console = Console()
-
-
-def main():
-    while True:
-        console.rule("[bold blue]Fingerprint Recognition System and Encryption Tool[/bold blue]")
-        console.print("\ne: Enroll Finger\ni: Identify Finger \nq: Quit\n", style="bold green")
-        command = Prompt.ask("Enter your command", choices=["e", "i", "q"])
-        if command == "e":
-            console.clear()
-            try:
-                enroll = Enroll()
-                console.print("[bold yellow]Enroll Finger Option[/bold yellow]")
-                console.print(
-                    "r: Get Raw Fingerprint Data\ne: Enroll Fingerprint and Encrypt Data\n", style="bold green"
-                )
-                sub_command = Prompt.ask("Enter your command", choices=["r", "e"])
-                if sub_command == "e":
-                    enroll.get_raw()
-                    console.print("[bold green]Fingerprint data captured successfully![/bold green]")
-            except Exception as e:
-                console.print(f"[bold red]Error:[/bold red] {e}")
-        if command == "q":
-            raise SystemExit
+ensure_paths()
 
 
-if __name__ == "__main__":
-    main()
+def feedback(status: EnrollStatus):
+    if status == EnrollStatus.PLACE_FINGER:
+        print("👉 Place Finger")
+    elif status == EnrollStatus.REMOVE_FINGER:
+        print("✋ Remove Finger")
+    elif status == EnrollStatus.PLACE_SAME_FINGER:
+        print("👉 Place Same Finger Again")
+    elif status == EnrollStatus.SUCCESS:
+        print("✅ Enrollment Successful")
+    elif status == EnrollStatus.FAIL:
+        print("❌ Enrollment Failed")
+    elif status == EnrollStatus.STORAGE_FULL:
+        print("⚠️ Storage Full")
+    elif status == EnrollStatus.LOCATION_OCCUPIED:
+        print("⚠️ Location Occupied")
+
+
+enroller = Enroll(on_status=feedback)
+
+# LED ها دست برنامه‌نویس است
+enroller.config_led(LED["ready"])
+data = enroller.store_finger(location=1)
+time.sleep(2)
+if data:
+    enroller.config_led(LED["succes"])
+    time.sleep(2)
+else:
+    enroller.config_led(LED["error"])
+    time.sleep(2)
+enroller.close()
+# identifier = Identify()
+# identifier.upload_to_sensor(data, 1)
+# if identifier.authenticate() == IdentifyStatus.SUCCESS:
+#     print(f"Authenticated ID: {identifier.loc_id}")
+#     identifier.config_led(LED["succes"])
+# else:
+#     identifier.config_led(LED["error"])
+# identifier.close()

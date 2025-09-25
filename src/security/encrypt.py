@@ -1,12 +1,15 @@
 import os
 from pathlib import Path
-from src.utils.logger import setup_logger
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+
+from src.utils.logger import setup_logger
+
 local_logger = setup_logger("Encrypt")
+
 
 class Encrypt:
     def __init__(self, iterations: int = 390000):
@@ -43,12 +46,12 @@ class Encrypt:
         ct, nonce, salt = self._encrypt(data, password)
         with open(filepath, "wb") as f:
             f.write(salt + nonce + ct)
-        local_logger.info(f"Data encrypted and saved to {filepath}")
+        local_logger.info("Data encrypted and saved to : %s", filepath)
         return True
 
     def decrypt_from_file(self, filepath: Path, password: str) -> bytes:
         with open(filepath, "rb") as f:
             raw = f.read()
         salt, nonce, ct = raw[:16], raw[16:28], raw[28:]
-        local_logger.info(f"Data read from {filepath}, starting decryption")
+        local_logger.info("Data read from %s, starting decryption", filepath)
         return self._decrypt(ct, nonce, salt, password)

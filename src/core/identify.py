@@ -38,9 +38,8 @@ class Identify(FingerprintSensor):
                 self._sensor.read_templates()
                 local_logger.info("Templates after upload: %s", self._sensor.templates)
                 return SensorStatus.SUCCESS, loc_id
-            else:
-                local_logger.error("Failed to send fingerprint data to sensor")
-                return SensorStatus.FAIL, None
+            local_logger.error("Failed to send fingerprint data to sensor")
+            return SensorStatus.FAIL, None
         except TypeError:
             local_logger.exception("Fingerprint data is corrupt")
             return SensorStatus.FAIL, None

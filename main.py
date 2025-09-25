@@ -1,10 +1,10 @@
 import time
 
-from src.config import LED,ENCRYPTED_PATH,DECRYPTED_PATH
+from src.config import ENCRYPTED_PATH, LED
 from src.core.enroll import Enroll
 from src.core.identify import Identify
-from src.security.encrypt import Encrypt
 from src.core.status import SensorStatus
+from src.security.encrypt import Encrypt
 from src.utils.setup_paths import ensure_paths
 
 ensure_paths()
@@ -33,7 +33,7 @@ data = enroller.get_raw()
 time.sleep(2)
 if data and isinstance(data, list):
     enroller.config_led(LED["succes"])
-    print(f"Enrolled successfully")
+    print("Enrolled successfully")
     time.sleep(2)
 else:
     enroller.config_led(LED["error"])
@@ -41,18 +41,18 @@ else:
     raise SystemExit("Enrollment Failed")
 enroller.close()
 encrypter = Encrypt()
-file_path = ENCRYPTED_PATH/"4433509132.bin"
-encrypted_data = encrypter.encrypt_to_file(file_path,data,"11235813")
-if not encrypted_data:
+file_path = ENCRYPTED_PATH / "4433509132.bin"
+ENCRYPTED_DATA = encrypter.encrypt_to_file(file_path, data, "11235813")
+if not ENCRYPTED_DATA:
     raise SystemExit("Encryption Failed")
-decrypted_data = encrypter.decrypt_from_file(file_path,"11235813")
-if not decrypted_data:
+DECRYPTED_DATA = encrypter.decrypt_from_file(file_path, "11235813")
+if not DECRYPTED_DATA:
     raise SystemExit("Decryption Failed")
 identifier = Identify(on_status=feedback)
 identifier.config_led(LED["ready"])
-status = identifier.upload_to_sensor(decrypted_data)
-if status[0] == SensorStatus.SUCCESS:
-    print(f"Uploaded successfully in :{status[1]}")
+_status = identifier.upload_to_sensor(DECRYPTED_DATA)
+if _status[0] == SensorStatus.SUCCESS:
+    print(f"Uploaded successfully in :{_status[1]}")
     identifier.config_led(LED["succes"])
     time.sleep(2)
 else:
@@ -61,9 +61,9 @@ else:
     raise SystemExit("Upload Failed")
 identifier.config_led(LED["process"])
 time.sleep(2)
-status = identifier.authenticate()
-if status[0] == SensorStatus.SUCCESS:
-    print(f"Authenticated ID: {status[1]}")
+_status = identifier.authenticate()
+if _status[0] == SensorStatus.SUCCESS:
+    print(f"Authenticated ID: {_status[1]}")
     identifier.config_led(LED["succes"])
     time.sleep(2)
 else:

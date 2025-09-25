@@ -1,7 +1,7 @@
 from enum import Enum, auto
 
 
-class EnrollStatus(Enum):
+class SensorStatus(Enum):
     START = auto()
     PLACE_FINGER = auto()
     REMOVE_FINGER = auto()
@@ -10,11 +10,6 @@ class EnrollStatus(Enum):
     FAIL = auto()
     STORAGE_FULL = auto()
     LOCATION_OCCUPIED = auto()
-
-
-class IdentifyStatus(Enum):
-    START = auto()
-    PLACE_FINGER = auto()
-    SUCCESS = auto()
     NOT_FOUND = auto()
-    FAIL = auto()
+
+

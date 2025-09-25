@@ -3,32 +3,30 @@ import time
 from src.config import LED
 from src.core.enroll import Enroll
 from src.core.identify import Identify
-from src.core.status import EnrollStatus, IdentifyStatus
+from src.core.status import SensorStatus
 from src.utils.setup_paths import ensure_paths
 
 ensure_paths()
 
 
-def feedback(status: EnrollStatus):
-    if status == EnrollStatus.PLACE_FINGER:
+def feedback(status: SensorStatus):
+    if status == SensorStatus.PLACE_FINGER:
         print("👉 Place Finger")
-    elif status == EnrollStatus.REMOVE_FINGER:
+    elif status == SensorStatus.REMOVE_FINGER:
         print("✋ Remove Finger")
-    elif status == EnrollStatus.PLACE_SAME_FINGER:
+    elif status == SensorStatus.PLACE_SAME_FINGER:
         print("👉 Place Same Finger Again")
-    elif status == EnrollStatus.SUCCESS:
-        print("✅ Enrollment Successful")
-    elif status == EnrollStatus.FAIL:
+    elif status == SensorStatus.SUCCESS:
+        print("✅ Successful")
+    elif status == SensorStatus.FAIL:
         print("❌ Enrollment Failed")
-    elif status == EnrollStatus.STORAGE_FULL:
+    elif status == SensorStatus.STORAGE_FULL:
         print("⚠️ Storage Full")
-    elif status == EnrollStatus.LOCATION_OCCUPIED:
+    elif status == SensorStatus.LOCATION_OCCUPIED:
         print("⚠️ Location Occupied")
 
 
 enroller = Enroll(on_status=feedback)
-
-# LED ها دست برنامه‌نویس است
 enroller.config_led(LED["ready"])
 data = enroller.get_raw()
 time.sleep(2)
@@ -41,11 +39,25 @@ else:
     time.sleep(2)
     raise SystemExit("Enrollment Failed")
 enroller.close()
-identifier = Identify()
-identifier.upload_to_sensor(data, 1)
-if identifier.authenticate() == IdentifyStatus.SUCCESS:
-    print(f"Authenticated ID: {identifier.loc_id}")
+identifier = Identify(on_status=feedback)
+identifier.config_led(LED["ready"])
+status=identifier.upload_to_sensor(data)
+if status[0]==SensorStatus.SUCCESS:
+    print(f"Uploaded successfully in :{status[1]}")
     identifier.config_led(LED["succes"])
+    time.sleep(2)
 else:
     identifier.config_led(LED["error"])
+    time.sleep(2)
+    raise SystemExit("Upload Failed")
+identifier.config_led(LED["process"])
+time.sleep(2)
+status= identifier.authenticate()
+if status[0] == SensorStatus.SUCCESS:
+    print(f"Authenticated ID: {status[1]}")
+    identifier.config_led(LED["succes"])
+    time.sleep(2)
+else:
+    identifier.config_led(LED["error"])
+    time.sleep(2)
 identifier.close()

@@ -1,4 +1,4 @@
-from typing import List, Tuple, Optional
+from typing import List, Optional, Tuple
 
 import adafruit_fingerprint
 
@@ -25,11 +25,11 @@ class Identify(FingerprintSensor):
         loc_list = [i for i in range(self._sensor.library_size) if i not in self._sensor.templates]
         if not loc_list:
             local_logger.error("No free locations available in sensor")
-            return SensorStatus.STORAGE_FULL ,None
+            return SensorStatus.STORAGE_FULL, None
         try:
             self.notify(SensorStatus.START)
             self._sensor.read_templates()
-            loc_id=loc_list[0]
+            loc_id = loc_list[0]
             local_logger.info("Templates before upload: %s", self._sensor.templates)
             status = self._sensor.send_fpdata(finger_data, "image")
             if status:

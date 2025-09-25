@@ -41,8 +41,8 @@ else:
 enroller.close()
 identifier = Identify(on_status=feedback)
 identifier.config_led(LED["ready"])
-status=identifier.upload_to_sensor(data)
-if status[0]==SensorStatus.SUCCESS:
+status = identifier.upload_to_sensor(data)
+if status[0] == SensorStatus.SUCCESS:
     print(f"Uploaded successfully in :{status[1]}")
     identifier.config_led(LED["succes"])
     time.sleep(2)
@@ -52,7 +52,7 @@ else:
     raise SystemExit("Upload Failed")
 identifier.config_led(LED["process"])
 time.sleep(2)
-status= identifier.authenticate()
+status = identifier.authenticate()
 if status[0] == SensorStatus.SUCCESS:
     print(f"Authenticated ID: {status[1]}")
     identifier.config_led(LED["succes"])

@@ -11,5 +11,3 @@ class SensorStatus(Enum):
     STORAGE_FULL = auto()
     LOCATION_OCCUPIED = auto()
     NOT_FOUND = auto()
-
-

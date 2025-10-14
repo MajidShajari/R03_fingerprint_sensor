@@ -59,7 +59,9 @@ class IdentifyService(FingerprintSensorService):
 
             store_status = self._sensor.store_model(loc_id, 2)
             if store_status != adafruit_fingerprint.OK:
-                self.logger.error("Failed to store uploaded fingerprint at location %d (code: %s)", loc_id, store_status)
+                self.logger.error(
+                    "Failed to store uploaded fingerprint at location %d (code: %s)", loc_id, store_status
+                )
                 return self.response(SensorStatus.FAIL)
 
             # refresh template list if possible

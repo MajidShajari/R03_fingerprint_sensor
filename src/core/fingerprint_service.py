@@ -152,7 +152,7 @@ async def authenticate_with_encrypted(
             result = await asyncio.to_thread(identify.upload_to_sensor, decrypted_data)
 
             if result.get("status") != SensorStatus.SUCCESS:
-                raise FingerprintError(f'Failed to upload fingerprint: {result.get("message")}', 400)
+                raise FingerprintError(f"Failed to upload fingerprint: {result.get('message')}", 400)
 
             auth_result = await asyncio.to_thread(identify.authenticate)
             if auth_result.get("status") == SensorStatus.SUCCESS:
@@ -160,7 +160,7 @@ async def authenticate_with_encrypted(
             if auth_result.get("status") == SensorStatus.NOT_FOUND:
                 return {"status": "not found"}
             else:
-                return {"status": "failed", "reason":auth_result.get("message")}
+                return {"status": "failed", "reason": auth_result.get("message")}
 
     except FingerprintError:
         raise

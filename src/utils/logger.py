@@ -6,27 +6,30 @@ import time
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 
-from src.config import LOGGER_PATH
+from src.config import settings
 
 
 def setup_logger(name: str = None) -> logging.Logger:
-    local_logger = logging.getLogger(name)
-    local_logger.setLevel(logging.INFO)
-    if local_logger.handlers:
-        return local_logger
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.INFO)
+
+    if logger.handlers:
+        return logger
+
     formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(processName)s - %(message)s",
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    if not Path(LOGGER_PATH).exists():
-        Path(LOGGER_PATH).mkdir()
+    Path(settings.LOGGER_PATH).mkdir(parents=True, exist_ok=True)
+
     file_handler = RotatingFileHandler(
-        f"{LOGGER_PATH}/{time.strftime('%Y_%m_%d')}.log",
-        maxBytes=5 * 1024 * 1024,  # 5MB
+        f"{settings.LOGGER_PATH}/{time.strftime('%Y_%m_%d')}.log",
+        maxBytes=5 * 1024 * 1024,
         backupCount=3,
         encoding="utf-8",
     )
     file_handler.setFormatter(formatter)
-    local_logger.addHandler(file_handler)
-    return local_logger
+    logger.addHandler(file_handler)
+
+    return logger

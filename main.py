@@ -1,13 +1,10 @@
 import time
 
+from core.enroll_service import FingerEnrollService
+from core.identify_service import IdentifyService
 from src.config import ENCRYPTED_PATH, LED
-from src.core.enroll import Enroll
-from src.core.identify import Identify
 from src.core.status import SensorStatus
-from src.security.encrypt import Encrypt
-from src.utils.setup_paths import ensure_paths
-
-ensure_paths()
+from utils.encrypt import Encrypt
 
 
 def feedback(status: SensorStatus):
@@ -27,7 +24,7 @@ def feedback(status: SensorStatus):
         print("⚠️ Location Occupied")
 
 
-enroller = Enroll(on_status=feedback)
+enroller = FingerEnrollService(on_status=feedback)
 enroller.config_led(LED["ready"])
 data = enroller.get_raw()
 time.sleep(2)
@@ -48,7 +45,7 @@ if not ENCRYPTED_DATA:
 DECRYPTED_DATA = encrypter.decrypt_from_file(file_path, "11235813")
 if not DECRYPTED_DATA:
     raise SystemExit("Decryption Failed")
-identifier = Identify(on_status=feedback)
+identifier = IdentifyService(on_status=feedback)
 identifier.config_led(LED["ready"])
 _status = identifier.upload_to_sensor(DECRYPTED_DATA)
 if _status[0] == SensorStatus.SUCCESS:

@@ -1,10 +1,11 @@
 """Logger configuration for the WhatsApp bot.
 This module sets up a logger that writes logs to both a file and the console."""
 
+# Standard Library
 import logging
-import time
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
+import time
 
 from src.config import settings
 

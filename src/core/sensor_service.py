@@ -1,12 +1,14 @@
+# Standard Library
 import time
 from typing import Callable, Dict, Optional
 
+# Third Library
 import adafruit_fingerprint
 import serial
 from serial import SerialException
 
 from src.config import settings
-from src.core.status import SensorStatus
+from src.core.status import SensorStatus, get_led_mode
 from src.utils.logger import setup_logger
 
 
@@ -44,12 +46,24 @@ class FingerprintSensorService:
             self.logger.exception("Unexpected error initializing sensor.")
             raise FingerprintSensorError("Unknown sensor error") from e
 
-    def send(self, status: SensorStatus, msg: str = ""):
-        self.logger.info(f"[{status.name}] {msg}")
+    def send(self, status: SensorStatus, message: str = "", **kwargs) -> dict:
+        """
+        Send sensor status to callback and return a standardized response.
+        """
+        # Log for debugging or traceability
+        self.logger.info(f"[{status.name}] {message}")
+        self.config_led(get_led_mode(status))
+        # Optional: trigger external callback (for UI feedback, etc.)
         if self.on_status:
-            self.on_status(status, msg)
+            try:
+                self.on_status(status, message)
+            except Exception as e:
+                self.logger.warning(f"on_status callback failed: {e}")
 
-    def response(self, status=SensorStatus.FAIL, **kwargs) -> dict:
+        # Build and return unified response
+        return self.response(status=status, message=message, **kwargs)
+
+    def response(self, status: SensorStatus, **kwargs) -> dict:
         """
         Build a standardized response dictionary for sensor or service operations.
         Example:

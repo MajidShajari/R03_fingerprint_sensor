@@ -1,5 +1,7 @@
+# Standard Library
 from typing import Callable, List, Optional, Tuple
 
+# Third Library
 import adafruit_fingerprint
 
 from src.config import settings
@@ -60,7 +62,9 @@ class IdentifyService(FingerprintSensorService):
             store_status = self._sensor.store_model(loc_id, 2)
             if store_status != adafruit_fingerprint.OK:
                 self.logger.error(
-                    "Failed to store uploaded fingerprint at location %d (code: %s)", loc_id, store_status
+                    "Failed to store uploaded fingerprint at location %d (code: %s)",
+                    loc_id,
+                    store_status,
                 )
                 return self.response(SensorStatus.FAIL)
 
@@ -86,29 +90,26 @@ class IdentifyService(FingerprintSensorService):
         """
         try:
             # Step 1 - Ask to place finger
-            self.config_led(settings.LED["p_finger"])
             self.send(SensorStatus.PLACE_FINGER, "Place your finger on the sensor")
-
             if not self.capture(timeout=settings.CAPTURE_TIME_OUT):
-                self.config_led(settings.LED["error"])
-                self.send(SensorStatus.FAIL, "Failed to read image")
-                return self.response(SensorStatus.FAIL, "Failed to read image")
+                return self.send(SensorStatus.FAIL, "Failed to read image")
+
             self.send(SensorStatus.REMOVE_FINGER, "Remove your finger")
             self.send(SensorStatus.PROCESSING, "Searching for fingerprint...")
             search_result = self._sensor.finger_search()
             if search_result == adafruit_fingerprint.OK:
                 loc_id = getattr(self._sensor, "finger_id", None)
                 auth_confidence = getattr(self._sensor, "confidence", None)
-                self.send(SensorStatus.SUCCESS, "Fingerprint recognized")
-                return self.response(SensorStatus.SUCCESS, loc_id=loc_id, confidence=auth_confidence)
+                return self.send(SensorStatus.SUCCESS, "Fingerprint recognized", loc_id=loc_id, confidence=auth_confidence)
 
             if search_result == adafruit_fingerprint.NOTFOUND:
                 self.logger.info("Fingerprint not found in library.")
                 self.send(SensorStatus.NOT_FOUND, "Fingerprint not found in library.")
                 return self.response(SensorStatus.NOT_FOUND)
-            self.send(SensorStatus.FAIL, f"Unexpected result from finger_search(): {search_result}")
-            return self.response(SensorStatus.FAIL)
+            return self.send(
+                SensorStatus.FAIL,
+                f"Unexpected result from finger_search(): {search_result}",
+            )
 
         except Exception as e:
-            self.send(SensorStatus.FAIL, f"Error during authentication: {e}")
-            return self.response(SensorStatus.FAIL)
+            return self.send(SensorStatus.FAIL, f"Error during authentication: {e}")

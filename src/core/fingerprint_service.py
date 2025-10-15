@@ -1,7 +1,8 @@
+# Standard Library
 import asyncio
-import re
 from contextlib import asynccontextmanager
 from pathlib import Path
+import re
 from typing import Optional
 
 from src.config import settings
@@ -100,7 +101,12 @@ async def enroll_fingerprint(user_id: str):
                 raise FingerprintError("No fingerprint data returned from sensor", 500)
 
             fingerprint_bytes = bytes(fingerprint_data)
-            await asyncio.to_thread(encryptor.encrypt_to_file, filepath, fingerprint_bytes, settings.SECRET_KEY)
+            await asyncio.to_thread(
+                encryptor.encrypt_to_file,
+                filepath,
+                fingerprint_bytes,
+                settings.SECRET_KEY,
+            )
 
             logger.info("Encrypted fingerprint saved for user %s at %s", user_id, str(filepath))
             return {

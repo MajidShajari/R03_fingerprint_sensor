@@ -9,3 +9,25 @@ dependencies = [
     "cryptography>=45.0.7",
     "pydantic-settings>=2.11.0",
 ]
+# isort
+[tool.isort]
+profile = "black"
+py_version = "311"
+line_length = "120"
+use_parentheses = true
+include_trailing_comma = true
+combine_as_imports = false
+force_sort_within_sections = true
+import_heading_stdlib = "Standard Library"
+import_heading_thirdparty = "Third Library"
+known_first_party = ["src"]
+known_third_party = [
+    "adafruit_fingerprint",
+    "cryptography",
+    "pydantic-settings",
+]
+sections = ["FUTURE", "STDLIB", "THIRDPARTY", "FIRSTPARTY", "LOCALFOLDER"]
+# black
+[tool.black]
+line-length = 120
+target-version = ['py311']

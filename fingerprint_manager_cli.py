@@ -1,6 +1,7 @@
+# Standard Library
 import asyncio
-import sys
 from pathlib import Path
+import sys
 
 from src.core.fingerprint_service import (
     FingerprintError,
@@ -12,6 +13,13 @@ from src.core.fingerprint_service import (
 from src.utils.logger import setup_logger
 
 logger = setup_logger("FingerprintCLI")
+
+
+# -------------------------------------------------------------------
+# Helper for print status
+# -------------------------------------------------------------------
+def on_sensor_status(status, msg):
+    print(f"[{status.name}] {msg}")
 
 
 # -------------------------------------------------------------------
@@ -46,6 +54,7 @@ async def cli_authenticate():
     if choice.strip() == "1":
         user_id = await ainput("Enter user ID: ")
         try:
+            print("\n🔑 Starting Authentiction...")
             result = await authenticate_with_encrypted(user_id=user_id)
             if result.get("status") == "not found":
                 print("❌ not found fingerprint")
@@ -59,6 +68,7 @@ async def cli_authenticate():
             print("❌ File not found.")
             return
         try:
+            print("\n🔑 Starting Authentiction...")
             result = await authenticate_with_encrypted(file_path=file_path)
             if result.get("status") == "not found":
                 print("❌ not found fingerprint")
